@@ -7,7 +7,7 @@ export function ChatPage() {
   const ambient = useOutletContext<AmbientProfile>()
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={{ height: "100%", minHeight: 0 }}>
       <Box>
         <Typography variant="h2">Conversa principal</Typography>
         <Typography color="text.secondary">

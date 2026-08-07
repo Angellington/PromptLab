@@ -50,7 +50,9 @@ export function AppLayout() {
           </Stack>
         </Box>
 
-        <Outlet context={ambient} />
+        <Box component="main" className="app-main">
+          <Outlet context={ambient} />
+        </Box>
       </Container>
     </Box>
   )

@@ -11,4 +11,5 @@ export type SendMessageInput = {
   messages: ChatMessage[]
   prompt: string
   ambientContext: string
+  model: string
 }
