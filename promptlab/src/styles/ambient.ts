@@ -18,7 +18,7 @@ const profiles: Record<string, AmbientProfile> = {
   },
   morning: {
     id: 'morning',
-    label: 'Manha clara',
+    label: 'Manhã clara',
     playlistHint: 'lo-fi claro, sintetizadores macios e batida curta',
     background: 'linear-gradient(135deg, #121821 0%, #1e3433 48%, #59683f 100%)',
     glow: 'rgba(201, 219, 127, 0.2)',
@@ -43,7 +43,9 @@ const profiles: Record<string, AmbientProfile> = {
 }
 
 export function getAmbientProfile(date = new Date()): AmbientProfile {
-  const hour = date.getHours()
+  let  hour = date.getHours()
+
+  hour = 15
 
   if (hour < 6) {
     return profiles.dawn

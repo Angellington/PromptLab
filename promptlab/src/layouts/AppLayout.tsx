@@ -7,11 +7,16 @@ import {
   Typography,
 } from '@mui/material'
 import { NavLink, Outlet } from 'react-router-dom'
+import { AmbientSoundIndicator } from '../features/audio/AmbientSoundIndicator'
+import { NowPlayingToast } from '../features/audio/NowPlayingToast'
+import { useAmbientSound } from '../features/audio/useAmbientSound'
+import '../features/audio/AmbientSoundIndicator.css'
 import { useAmbientProfile } from '../styles/useAmbientProfile'
 import './AppLayout.css'
 
 export function AppLayout() {
   const ambient = useAmbientProfile()
+  const ambientSound = useAmbientSound()
 
   return (
     <Box
@@ -22,6 +27,10 @@ export function AppLayout() {
         '--ambient-panel': ambient.panel,
       }}
     >
+      <NowPlayingToast
+        notificationKey={ambientSound.notificationKey}
+        trackTitle={ambientSound.trackTitle}
+      />
       <Container maxWidth="xl" className="app-frame">
         <Box component="header" className="app-header">
           <Stack spacing={0.5}>
@@ -31,7 +40,8 @@ export function AppLayout() {
             <Typography variant="h1">Chat ambiental</Typography>
           </Stack>
 
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+            <AmbientSoundIndicator {...ambientSound} onToggle={ambientSound.toggle} />
             <Chip
               size="small"
               label={ambient.label}
@@ -44,9 +54,9 @@ export function AppLayout() {
             <Button component={NavLink} to="/chat" size="small">
               Chat
             </Button>
-            <Button component={NavLink} to="/settings" size="small">
+            {/* <Button component={NavLink} to="/settings" size="small">
               Ajustes
-            </Button>
+            </Button> */}
           </Stack>
         </Box>
 

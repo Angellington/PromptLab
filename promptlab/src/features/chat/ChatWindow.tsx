@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState, type KeyboardEvent } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
+import useSound from 'use-sound'
 import {
   Alert,
   Box,
@@ -14,6 +15,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import submitSound from '../../assets/songs/sfx/onsubmit/00256 - WAV_256_GUESS_BANK_MEN.wav'
 import type { AmbientProfile } from '../../styles/ambient'
 import { createAssistantMessage, ollamaClient } from '../../services/ai/ollamaClient'
 import type { ChatMessage } from './chatTypes'
@@ -98,6 +100,7 @@ export function ChatWindow({ ambient }: ChatWindowProps) {
   const [isLoadingModels, setIsLoadingModels] = useState(true)
   const [modelsError, setModelsError] = useState<string | null>(null)
   const threadRef = useRef<HTMLDivElement>(null)
+  const [playSubmitSound] = useSound(submitSound, { volume: 0.6, interrupt: true })
   const {
     formState: { errors, isValid },
     handleSubmit,
@@ -145,8 +148,16 @@ export function ChatWindow({ ambient }: ChatWindowProps) {
     if (thread) thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' })
   }, [state.messages, state.isSending])
 
+  const handlePromptKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Enter' || event.ctrlKey || event.nativeEvent.isComposing) return
+
+    event.preventDefault()
+    if (canSend) event.currentTarget.closest('form')?.requestSubmit()
+  }
+
   const handlePromptSubmit: SubmitHandler<ChatFormValues> = async (values) => {
     const cleanPrompt = values.prompt.trim()
+    playSubmitSound()
 
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
@@ -223,9 +234,10 @@ export function ChatWindow({ ambient }: ChatWindowProps) {
           inputRef={promptField.ref}
           onBlur={promptField.onBlur}
           onChange={promptField.onChange}
-          placeholder="Escreva uma ideia, prompt, duvida ou teste de modelo..."
+          onKeyDown={handlePromptKeyDown}
+          placeholder="Escreva uma ideia, prompt, dúvida ou teste de modelo..."
           error={Boolean(errors.prompt)}
-          helperText={errors.prompt?.message}
+          helperText={errors.prompt?.message ?? 'Enter envia • Ctrl+Enter quebra linha'}
           fullWidth
           multiline
           minRows={2}
